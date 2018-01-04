@@ -84,18 +84,20 @@ export function defineReactive (
   key: string,
   val: any,
   customSetter?: ?Function,
-  shallow?: boolean
+  shallow?: boolean  // 是否为浅操作
 ) {
 
+  // 获取属性的描述对象，如果该属性的`configurable(该属性是否能被更改或删除)`为false直接return掉
   const property = Object.getOwnPropertyDescriptor(obj, key)
   if (property && property.configurable === false) {
     return
   }
 
-  // cater for pre-defined getter/setters
+  // 获取属性已经预定义的getter和setter
   const getter = property && property.get
   const setter = property && property.set
 
+  // 属性值如果不为shallow(浅操作)就去执行observer函数来判断是否需要继续递归
   let childOb = !shallow && observe(val)
   Object.defineProperty(obj, key, {
     enumerable: true,
