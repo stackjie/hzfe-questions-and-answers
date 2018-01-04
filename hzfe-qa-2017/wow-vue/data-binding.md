@@ -86,7 +86,6 @@ export function defineReactive (
   customSetter?: ?Function,
   shallow?: boolean
 ) {
-  const dep = new Dep()
 
   const property = Object.getOwnPropertyDescriptor(obj, key)
   if (property && property.configurable === false) {
@@ -103,13 +102,9 @@ export function defineReactive (
     configurable: true,
     get: function reactiveGetter () {
       const value = getter ? getter.call(obj) : val
-      if (Dep.target) {
-        dep.depend()
-        if (childOb) {
-          childOb.dep.depend()
-          if (Array.isArray(value)) {
-            dependArray(value)
-          }
+      if (childOb) {
+        if (Array.isArray(value)) {
+          dependArray(value)
         }
       }
       return value
@@ -130,7 +125,6 @@ export function defineReactive (
         val = newVal
       }
       childOb = !shallow && observe(newVal)
-      dep.notify()
     }
   })
 }
